@@ -10,99 +10,126 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            /*
-             * создаем первый экземпляр класса Worker - 
-             * (объект) worker1 и передаем в его конструктор имя, возраст и ИНН
-             */
-            Worker worker1 = new Worker("Вася", 45, 165168168);
-            /*
-             * Вызываем у нашего объекта(работника)
-             * метод Print()
-             */
+            
+            /*workers[0] = new Worker("Вася", 45, 165168168);
+            workers[1] = new Worker("Петя", 27, 41649164);
+            workers[2] = new Worker("Светлана", 23);
+            workers[3] = new Driver("Ivan",35,54246,"VAZ",256);
+            workers[4] = new Manager("Вася", 45, 165168168, 10);*/
+
+            Random rnd = new Random();
+            string[] names = new string[5] { "Вася", "Петр", 
+                "Светлана", "Елена", "Иван" };
+
+            Worker[] workers = new Worker[rnd.Next(5,10)];
+            for (int i = 0; i < workers.GetLength(0); i++)
+            {
+                if (rnd.Next(1,3) == 1)
+                {
+                    workers[i] = new Driver(
+                        names[rnd.Next(0, names.GetLength(0))], 
+                        rnd.Next(20, 70), 
+                        rnd.Next(111111, 999999), 
+                        "VAZ", 
+                        rnd.Next(100, 256));
+                }
+                else
+                {
+                    workers[i] = new Manager(
+                        names[rnd.Next(0, names.GetLength(0))], 
+                        rnd.Next(20, 70), 
+                        rnd.Next(111111, 999999), 
+                        rnd.Next(5, 20));
+                }
+            }
+
+            for (int i = 0; i < workers.GetLength(0); i++)
+            {
+                workers[i].Print();
+            }
+
+            /*Driver driver1 = new Driver("Oleg", 25, 62626416, "BMW", 128);
+            Worker worker1 = driver1;
             worker1.Print();
 
-            /*
-             * создаем второй экземпляр класса Worker - 
-             * (объект) worker2 и передаем в его конструктор имя, возраст и ИНН
-             */
-            Worker worker2 = new Worker("Петя", 27, 41649164);
-            /*
-             * Вызываем у нашего объекта(работника)
-             * метод Print()
-             */
-            worker2.Print();
+            Driver dr = (Driver)worker1;*/
+            //Console.WriteLine(dr.hours);
 
-            /*
-             * создаем третий экземпляр класса Worker - 
-             * (объект) worker3 и передаем в его конструктор имя и возраст.
-             * При этом используется второй конструктор. ИНН задается 
-             * значением по умолчанию - нулем.
-             */
-            Worker worker3 = new Worker("Светлана", 23);
-            /*
-             * Вызываем у нашего объекта(работника)
-             * метод Print()
-             */
-            worker3.Print();
+            //---------------------------------------
+
+            /*Driver dr1 = new Driver("Вася", 45, 165168168,"UAZ",
+                10);
+            worker1 = dr1;*/
+
+            /*if (worker1 is Driver)
+            {
+                dr = (Driver)worker1;
+                Console.WriteLine(dr.hours);
+            }*/
+
+            /*dr = worker1 as Driver;
+            if (dr != null)
+            {
+                Console.WriteLine(dr.hours);
+            }*/
+            
+
+
+
+
+            /*for (int i = 0; i < workers.GetLength(0); i++)
+            {
+                workers[i].Print();
+                Console.WriteLine();
+            }*/
+
+            //Console.WriteLine(Worker.count);
+
+            /*Worker.PrintWorkers(workers);
+
+            Worker worker = new Worker("Jenny", 26);
+            worker.Print();
+
+            double x = Math.Sin(1.57);
+            Console.WriteLine(x);*/
+
+            /*Driver driver = new Driver("Ivan",35,54246,"VAZ",256);
+            driver.Print();
+
+            Manager manager1 = new Manager("Вася", 45, 165168168, 10);
+            manager1.Print();*/
+
+            Driver dr1 = new Driver("Ivan", 35, 54246, "VAZ", 256);
+            Console.WriteLine(dr1.PayTax());
 
             Console.ReadLine();
         }
+
+        
     }
 
-    
-    /*
-     * Класс Worker служит нам для моделирования работников
-     * нашей фирмы. По его "шаблону" мы можем создавать объекты - 
-     * см. метод Main();
-     */
-    class Worker
+    public interface IPayTax
     {
-        /*
-         * первое поле класса. В этой "ячейке"
-         * может храниться имя каждого нашего работника.
-         */
-        private string name;
-        /*
-         * Второе поле нашего класса.
-         * Хранит возраст нашего работника.
-         */
-        private int age;
-        /*
-         * Третье поле нашего класса.
-         * Хранит ИНН нашего работника.
-         */
-        public Int64 snn;
+        double PayTax();
+    }
 
-        /*
-         * Первое свойство в нашем классе.
-         * Отвечает за взаимодействие с именем нашего работника.
-         * Мы пришли к выводу, что имя остается неизменным на протяжении 
-         * жизни нашего работника, поэтому мы оставили только метод get{} - 
-         * возможность посмотреть его имя. Поле name сделали приватным.
-         */
+    abstract class Worker
+    {
+        private string name;
+        private int age;
+        public Int64 snn;
+        public static int count;
+        protected double salary;
+
         public string Name
         {
             get { return name; }
         }
-        /*
-         * Второе свойство в нашем классе.
-         * Отвечает за взаимодействие с возрастом нашего работника.
-         * Мы пришли к выводу, что нельзя дать возможность случайно или по ошибке
-         * записать работнику отрицательный возраст. Поэтому: поле age сделали приватным,
-         * установка возраста только через метод set{}, чтение через метод get{}.
-         */
         public int Age
         {
-            //обеспечивает возможность "посмотреть" возраст
             get { return age; }
-            //обеспечивает возможность задать возраст
             set
             {
-                /*
-                 * Используется некоторая переменная value.
-                 * По сути, значение, которое мы хотим задать в качестве 
-                 * возраста сперва передается в нее.
-                 */
                 if (value < 0)
                 {
                     Console.WriteLine("Неверно задан возраст!");
@@ -114,45 +141,100 @@ namespace ConsoleApplication1
             }
         }
 
-        /*
-         * Первый и единственный метод в нашем классе.
-         * Он определяет то, что "умеет делать наш работник" - рассказать о себе.
-         * Или другими словами - вывести информацию о себе на консоль.
-         */
-        public void Print()
+        abstract public int GetBonus();
+
+       public virtual void Print()
         {
             Console.WriteLine("Имя: " + name);
             Console.WriteLine("Возраст: " + age);
             Console.WriteLine("ИНН: " + snn);
-            Console.WriteLine();
+            Console.WriteLine("Премия: " + GetBonus());
         }
 
-        /*
-         * Первый конструктор нашего класса. Его функция - задать информацию
-         * о работнике. При вызове констуктора (см. метод Main()) мы передаем в него 3 параметра:
-         * имя, возраст, ИНН, которые записываются в соответствующие поля.
-         */
-        public Worker(string name, int age, Int64 snn)
+        public static void PrintWorkers(Worker[] workers)
+        {
+            for (int i = 0; i < workers.GetLength(0); i++)
+            {
+                workers[i].Print();
+            }
+        }
+
+       public Worker(string name, int age, Int64 snn)
         {
             this.name = name;
             this.Age = age;
             this.snn = snn;
+            count++;
+            salary = 20000;
         }
 
-        /*
-         * Второй конструктор нашего класса. Предусмотрен на случай если нам не
-         * известен ИНН работника. Функция этого конструктора - та же самая, мы
-         * задаем информацию о нашем работнике. При вызове констуктора (см. метод Main())
-         * мы передаем в него 2 параметра: имя, возраст, которые записываются в соответствующие поля.
-         */
         public Worker(string name, int age)
             : this(name, age, 0)
         {
-            /*
-             * с помощью ключевого слова this мы указали,
-             * что этот конструктор ссылается на первый(основной)
-             * конструктор нашего класса.
-             */
+            
+        }
+        static Worker()
+        {
+            count = 0;
+        }
+        public Worker()
+        { }
+    }
+    sealed class Driver : Worker, IPayTax
+    {
+        public string carType;
+        public int hours;
+
+        public double PayTax()
+        {
+            return 0.13 * salary;
+        }
+
+        public Driver(string name, int age, Int64 snn, string carType,
+            int hours) : base(name, age, snn)
+        {
+            this.carType = carType;
+            this.hours = hours;
+            salary = 35000;
+        }
+
+        public override int GetBonus()
+        {
+            return hours * 100;
+        }
+
+        public override void Print()
+        {
+            base.Print();
+            Console.WriteLine("Марка машины: " + carType);
+            Console.WriteLine("Количество часов: " + hours);
+            Console.WriteLine();
         }
     }
+
+    sealed class Manager : Worker 
+    {
+        public int projectsCount;
+
+        public Manager(string name, int age, Int64 snn, 
+            int projectsCount) : base(name, age, snn)
+        {
+            this.projectsCount = projectsCount;
+            salary = 40000;
+        }
+
+        public override int GetBonus()
+        {
+            return projectsCount*1500;
+        }
+
+        public override void Print()
+        {
+            base.Print();
+            Console.WriteLine("Количество проектов: " + projectsCount);
+            Console.WriteLine();
+        }
+    }
+
+    
 }

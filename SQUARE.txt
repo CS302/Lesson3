@@ -1,0 +1,75 @@
+class Square
+    {
+        Square square1 = new Square(1, 1, 5, "Red");
+            Square square2 = new Square(1, 1, 7, "White");
+            Square square3 = new Square(1, 1, 9, "Red");
+        Square[] squares = new Square[3];
+            squares[0] = new Square(1, 1, 5, "Red");
+            squares[1] = new Square(1, 1, 7, "White");
+            squares[2] = new Square(1, 1, 9, "Red");
+
+            Square square4 = new Square();
+            square4.Area();
+
+            Square.PrintSquares(squares);
+
+            Console.WriteLine(Square.counter);
+        public int x;
+        public int y;
+        private int length;
+        public string color;
+        public static int counter;
+
+        public int Length
+        {
+            get { return length; }
+            set
+            {
+                if (value < 0)
+                {
+                    Console.WriteLine("неверное значение");
+                }
+                else
+                {
+                    length = value;
+                }
+            }
+        }
+
+        public Square(int x, int y, int length, string color)
+        {
+            this.x = x;
+            this.y = y;
+            this.Length = length;
+            this.color = color;
+            if (color == "Red")
+            {
+                counter++;
+            }
+        }
+        public Square()
+            : this(0, 0, 1, "White")
+        { }
+
+        public int Area()
+        { return length * length; }
+
+        public int Perimeter()
+        { return 4 * length; }
+
+        public void Print()
+        {
+            Console.WriteLine(color);
+            Console.WriteLine(Area());
+            Console.WriteLine(Perimeter());
+            Console.WriteLine();
+        }
+
+        public static void PrintSquares(Square[] squares)
+        {
+            for (int i = 0; i < squares.GetLength(0); i++)
+            {
+                squares[i].Print();
+            }
+        }
+    }
