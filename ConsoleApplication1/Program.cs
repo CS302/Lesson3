@@ -10,94 +10,48 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            
-            /*workers[0] = new Worker("Вася", 45, 165168168);
-            workers[1] = new Worker("Петя", 27, 41649164);
-            workers[2] = new Worker("Светлана", 23);
-            workers[3] = new Driver("Ivan",35,54246,"VAZ",256);
-            workers[4] = new Manager("Вася", 45, 165168168, 10);*/
-
+            //генератор псевдослучайных чисел
             Random rnd = new Random();
             string[] names = new string[5] { "Вася", "Петр", 
                 "Светлана", "Елена", "Иван" };
 
-            Worker[] workers = new Worker[rnd.Next(5,10)];
-            for (int i = 0; i < workers.GetLength(0); i++)
+            /*
+             * для реализации сортировки пришлось перейти от массива
+             * к списку. суть примерно та же, но есть и отличия. подробнее
+             * будет на следующих уроках
+             */
+            List<Worker> workers = new List<Worker>();
+            //в цикле случайным образом заполняем наш список менеджерами и водителями
+            //при этом возраст, ИНН и другие характеристики задаются случайным образом
+            for (int i = 0; i < rnd.Next(5,10); i++)
             {
                 if (rnd.Next(1,3) == 1)
                 {
-                    workers[i] = new Driver(
+                    workers.Add(new Driver(
                         names[rnd.Next(0, names.GetLength(0))], 
                         rnd.Next(20, 70), 
                         rnd.Next(111111, 999999), 
                         "VAZ", 
-                        rnd.Next(100, 256));
+                        rnd.Next(100, 256)));
                 }
                 else
                 {
-                    workers[i] = new Manager(
+                    workers.Add(new Manager(
                         names[rnd.Next(0, names.GetLength(0))], 
                         rnd.Next(20, 70), 
                         rnd.Next(111111, 999999), 
-                        rnd.Next(5, 20));
+                        rnd.Next(5, 20)));
                 }
             }
+            //этот метод отсортирует наших работников
+            workers.Sort();
 
-            for (int i = 0; i < workers.GetLength(0); i++)
+            for (int i = 0; i < workers.Count; i++)
             {
                 workers[i].Print();
             }
 
-            /*Driver driver1 = new Driver("Oleg", 25, 62626416, "BMW", 128);
-            Worker worker1 = driver1;
-            worker1.Print();
-
-            Driver dr = (Driver)worker1;*/
-            //Console.WriteLine(dr.hours);
-
-            //---------------------------------------
-
-            /*Driver dr1 = new Driver("Вася", 45, 165168168,"UAZ",
-                10);
-            worker1 = dr1;*/
-
-            /*if (worker1 is Driver)
-            {
-                dr = (Driver)worker1;
-                Console.WriteLine(dr.hours);
-            }*/
-
-            /*dr = worker1 as Driver;
-            if (dr != null)
-            {
-                Console.WriteLine(dr.hours);
-            }*/
             
-
-
-
-
-            /*for (int i = 0; i < workers.GetLength(0); i++)
-            {
-                workers[i].Print();
-                Console.WriteLine();
-            }*/
-
-            //Console.WriteLine(Worker.count);
-
-            /*Worker.PrintWorkers(workers);
-
-            Worker worker = new Worker("Jenny", 26);
-            worker.Print();
-
-            double x = Math.Sin(1.57);
-            Console.WriteLine(x);*/
-
-            /*Driver driver = new Driver("Ivan",35,54246,"VAZ",256);
-            driver.Print();
-
-            Manager manager1 = new Manager("Вася", 45, 165168168, 10);
-            manager1.Print();*/
 
             Driver dr1 = new Driver("Ivan", 35, 54246, "VAZ", 256);
             Console.WriteLine(dr1.PayTax());
@@ -108,12 +62,16 @@ namespace ConsoleApplication1
         
     }
 
+    //добавили собственный интерфейс
     public interface IPayTax
     {
+        //в теле интерфейса определили сигнатуру метода,
+        //который должны реализовать классы, реализующие этот интерфейс
         double PayTax();
     }
 
-    abstract class Worker
+    //реализует интерфейс "Я сравнимый" для сортировки. см. метод Main();
+    abstract class Worker : IComparable
     {
         private string name;
         private int age;
@@ -141,9 +99,15 @@ namespace ConsoleApplication1
             }
         }
 
+        //абстрактный метод, который ОБЯЗАТЕЛЬНО должен быть реализован
+        //в классах-наследниках
         abstract public int GetBonus();
 
-       public virtual void Print()
+        /*
+         * этот метод помечен виртуальным, что означает, что он
+         * МОЖЕТ БЫТЬ переопределен в классах-наследниках
+         */
+        public virtual void Print()
         {
             Console.WriteLine("Имя: " + name);
             Console.WriteLine("Возраст: " + age);
@@ -179,7 +143,31 @@ namespace ConsoleApplication1
         }
         public Worker()
         { }
+
+        /*
+         * реализация метода из интерфейса "Я сравнимый".
+         * сравнение будем проводить по размеру премии.
+         */
+        public int CompareTo(object obj)
+        {
+            if (this.GetBonus() < (obj as Worker).GetBonus())
+            {
+                return -1;
+            }
+            if (this.GetBonus() == (obj as Worker).GetBonus())
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
     }
+
+    /*
+     * Водитель является наследником работника и реализует интерфейс "Я плачу налоги"
+     */
     sealed class Driver : Worker, IPayTax
     {
         public string carType;
@@ -190,6 +178,9 @@ namespace ConsoleApplication1
             return 0.13 * salary;
         }
 
+        /*
+         * обращение к конструктору работника с помощью слова base(...)
+         */
         public Driver(string name, int age, Int64 snn, string carType,
             int hours) : base(name, age, snn)
         {
@@ -198,6 +189,7 @@ namespace ConsoleApplication1
             salary = 35000;
         }
 
+        //переопределили для водителя метод начисления премии
         public override int GetBonus()
         {
             return hours * 100;
@@ -212,6 +204,7 @@ namespace ConsoleApplication1
         }
     }
 
+    //является наследником работника
     sealed class Manager : Worker 
     {
         public int projectsCount;
